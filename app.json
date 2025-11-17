@@ -45,7 +45,9 @@
         {
           "url": "https://sentry.io/",
           "project": "react-native-fast-food",
-          "organization": "next-js-3c"
+          "organization": "next-js-3c",
+          "uploadNativeSymbols": false,
+          "uploadSourceMaps": false
         }
       ]
     ],

@@ -1,4 +1,4 @@
-import { CreateUserPrams , GetMenuParams, SignInParams } from "@/type";
+import { CreateUserPrams , GetMenuParams, SignInParams, MenuItem, Category, User } from "@/type";
 import { Account, Avatars, Client, Databases, ID, Query ,Storage} from "react-native-appwrite";
 
 export const appwriteConfig = {
@@ -58,7 +58,7 @@ export const signIn = async ({email , password}: SignInParams) => {
     }
 }
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<User | null> => {
     try {
         const currentAccount = await account.get() ;
         if(!currentAccount) throw Error
@@ -71,7 +71,7 @@ export const getCurrentUser = async () => {
 
         if(!currentUser) throw Error
 
-        return currentUser.documents[0]
+        return currentUser.documents[0] as unknown as User
     } catch (error) {
         throw new Error(error as string)
     }
@@ -79,32 +79,33 @@ export const getCurrentUser = async () => {
 
 
 
-export const getMenu = async ({category, query} :GetMenuParams ) =>{
+export const getMenu = async ({category, query, limit}: GetMenuParams = {}): Promise<MenuItem[]> =>{
     const queries: string[] = [];
   try {
       if(category) queries.push(Query.equal('categories' ,category))
       if(query)  queries.push(Query.search('name' ,query)) ;
+      if(limit) queries.push(Query.limit(limit));
 
       const menu = await database.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.menuCollectionId,
         queries
       )
-      return menu.documents
+      return menu.documents as unknown as MenuItem[]
     }
     catch (error) {
       throw new Error(error as string)
     }
 }
 
-export const getCategories = async () => {
+export const getCategories = async (_params?: {}): Promise<Category[]> => {
     try {
         const categories = await database.listDocuments(
             appwriteConfig.databaseId,
             appwriteConfig.categoriesCollectionId,
         )
 
-        return categories.documents
+        return categories.documents as unknown as Category[]
     } catch (error) {
         throw new Error(error as string)
     }

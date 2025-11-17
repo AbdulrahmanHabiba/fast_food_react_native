@@ -14,14 +14,14 @@ type AuthState = {
     fetchAuthenticatedUser: ()=> Promise<void> ;
 }
 
-const useAuthStore = create<AuthState>((set) => ({
+const useAuthStore = create<AuthState>((set: any) => ({
     isAuthenticated: false,
     user: null,
     isLoading: true,
 
-    setIsAuthenticated: (value) => set({isAuthenticated :value}),
-    setUser: (user) => set({user}),
-    setIsLoading: (value) => set({isLoading: value}),
+    setIsAuthenticated: (value: boolean) => set({isAuthenticated :value}),
+    setUser: (user: any) => set({user}),
+    setIsLoading: (value: boolean) => set({isLoading: value}),
     fetchAuthenticatedUser: async () => {
         set({isLoading : true})
         try {

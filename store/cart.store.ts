@@ -1,4 +1,4 @@
-import { CartCustomization, CartStore } from "@/type";
+import { CartCustomization, CartItemType, CartStore } from "@/type";
 import { create } from "zustand";
 
 function areCustomizationsEqual(
@@ -13,21 +13,21 @@ function areCustomizationsEqual(
     return aSorted.every((item, idx) => item.id === bSorted[idx].id);
 }
 
-export const useCartStore = create<CartStore>((set, get) => ({
+export const useCartStore = create<CartStore>((set: any, get: any) => ({
     items: [],
 
-    addItem: (item) => {
+    addItem: (item: Omit<CartItemType, "quantity">) => {
         const customizations = item.customizations ?? [];
 
         const existing = get().items.find(
-            (i) =>
+            (i: CartItemType) =>
                 i.id === item.id &&
                 areCustomizationsEqual(i.customizations ?? [], customizations)
         );
 
         if (existing) {
             set({
-                items: get().items.map((i) =>
+                items: get().items.map((i: CartItemType) =>
                     i.id === item.id &&
                     areCustomizationsEqual(i.customizations ?? [], customizations)
                         ? { ...i, quantity: i.quantity + 1 }
@@ -41,10 +41,10 @@ export const useCartStore = create<CartStore>((set, get) => ({
         }
     },
 
-    removeItem: (id, customizations = []) => {
+    removeItem: (id: string, customizations: CartCustomization[] = []) => {
         set({
             items: get().items.filter(
-                (i) =>
+                (i: CartItemType) =>
                     !(
                         i.id === id &&
                         areCustomizationsEqual(i.customizations ?? [], customizations)
@@ -53,9 +53,9 @@ export const useCartStore = create<CartStore>((set, get) => ({
         });
     },
 
-    increaseQty: (id, customizations = []) => {
+    increaseQty: (id: string, customizations: CartCustomization[] = []) => {
         set({
-            items: get().items.map((i) =>
+            items: get().items.map((i: CartItemType) =>
                 i.id === id &&
                 areCustomizationsEqual(i.customizations ?? [], customizations)
                     ? { ...i, quantity: i.quantity + 1 }
@@ -64,26 +64,26 @@ export const useCartStore = create<CartStore>((set, get) => ({
         });
     },
 
-    decreaseQty: (id, customizations = []) => {
+    decreaseQty: (id: string, customizations: CartCustomization[] = []) => {
         set({
             items: get()
-                .items.map((i) =>
+                .items.map((i: CartItemType) =>
                     i.id === id &&
                     areCustomizationsEqual(i.customizations ?? [], customizations)
                         ? { ...i, quantity: i.quantity - 1 }
                         : i
                 )
-                .filter((i) => i.quantity > 0),
+                .filter((i: CartItemType) => i.quantity > 0),
         });
     },
 
     clearCart: () => set({ items: [] }),
 
     getTotalItems: () =>
-        get().items.reduce((total, item) => total + item.quantity, 0),
+        get().items.reduce((total: number, item: CartItemType) => total + item.quantity, 0),
 
     getTotalPrice: () =>
-        get().items.reduce((total, item) => {
+        get().items.reduce((total: number, item: CartItemType) => {
             const base = item.price;
             const customPrice =
                 item.customizations?.reduce(

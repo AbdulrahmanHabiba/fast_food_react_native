@@ -101,7 +101,8 @@ interface SignInParams {
     password: string;
 }
 
-interface GetMenuParams {
-    category: string;
-    query: string;
+interface GetMenuParams extends Record<string, string | number | undefined> {
+    category?: string;
+    query?: string;
+    limit?: number;
 }

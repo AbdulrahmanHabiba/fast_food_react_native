@@ -7,7 +7,7 @@ import {useEffect} from "react";
 import CartButton from "@/components/CartButton";
 import cn from "clsx";
 import MenuCard from "@/components/MenuCard";
-import {MenuItem} from "@/type";
+import {MenuItem, Category, GetMenuParams} from "@/type";
 
 import Filter from "@/components/Filter";
 import SearchBar from "@/components/SearchBar";
@@ -15,8 +15,8 @@ import SearchBar from "@/components/SearchBar";
 const Search = () => {
     const { category, query } = useLocalSearchParams<{query: string; category: string}>()
 
-    const { data, refetch, loading } = useAppwrite({ fn: getMenu, params: { category,  query,  limit: 6, } });
-    const { data: categories } = useAppwrite({ fn: getCategories });
+    const { data, refetch, loading } = useAppwrite<MenuItem[], GetMenuParams>({ fn: getMenu, params: { category,  query,  limit: 6, } });
+    const { data: categories } = useAppwrite<Category[], {}>({ fn: getCategories, params: {} });
 
     useEffect(() => {
         refetch({ category, query, limit: 6})
@@ -31,7 +31,7 @@ const Search = () => {
 
                     return (
                         <View className={cn("flex-1 max-w-[48%]", !isFirstRightColItem ? 'mt-10': 'mt-0')}>
-                            <MenuCard item={item as MenuItem} />
+                            <MenuCard item={item} />
                         </View>
                     )
                 }}
@@ -54,7 +54,7 @@ const Search = () => {
 
                         <SearchBar />
 
-                        <Filter categories={categories!} />
+                        <Filter categories={(categories || []) as Category[]} />
                     </View>
                 )}
                 ListEmptyComponent={() => !loading && <Text>No results</Text>}
